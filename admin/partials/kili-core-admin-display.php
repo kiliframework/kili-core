@@ -5,7 +5,7 @@
  *
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @link       https://github.com/fabolivar
+ * @link       https://github.com/kiliframework/kili-core
  * @since      1.0.0
  *
  * @package    Kili_Core

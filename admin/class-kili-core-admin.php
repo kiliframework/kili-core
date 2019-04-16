@@ -3,12 +3,14 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://github.com/fabolivar
+ * @link       https://github.com/kiliframework/kili-core
  * @since      1.0.0
  *
  * @package    Kili_Core
  * @subpackage Kili_Core/admin
  */
+
+ require_once( 'vendor/class-tgm-plugin-activation.php' );
 
 /**
  * The admin-specific functionality of the plugin.
@@ -48,10 +50,9 @@ class Kili_Core_Admin {
 	 * @param      string    $version    The version of this plugin.
 	 */
 	public function __construct( $plugin_name, $version ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+		$this->add_actions();
 	}
 
 	/**
@@ -60,21 +61,7 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Kili_Core_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Kili_Core_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/kili-core-admin.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -83,21 +70,79 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Kili_Core_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Kili_Core_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.js', array( 'jquery' ), $this->version, false );
+	}
 
+	public function add_actions() {
+		add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
+	}
+
+	public function kili_register_required_plugins() {
+		$plugins = array(
+			array(
+				'name'      => 'Timber Library',
+				'slug'      => 'timber-library',
+				'required'  => true,
+			),
+			array(
+				'name'     => 'SVG Support',
+				'slug'     => 'svg-support',
+				'required' => false,
+			),
+			array(
+				'name'     => 'TinyMCE Advanced',
+				'slug'     => 'tinymce-advanced',
+				'required' => false,
+			),
+		);
+		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		if ( ! is_plugin_active( 'advanced-custom-fields-pro/acf.php' ) ) {
+			array_push( $plugins, array(
+				'name'                  => 'Advanced Custom Fields',
+				'slug'                  => 'advanced-custom-fields',
+				'source'                => 'https://github.com/AdvancedCustomFields/acf/archive/master.zip',
+				'required'              => true,
+				'version'               => '5.7.12',
+				'force_activation'      => false,
+				'force_deactivation'    => false,
+				'external_url'          => 'https://github.com/AdvancedCustomFields/acf',
+			) );
+			array_push( $plugins, array(
+				'name'                  => 'Advanced Custom Fields: Options Page',
+				'slug'                  => 'acf-options-page',
+				'source'                => 'https://connect.advancedcustomfields.com/index.php?a=download&p=options-page&k=OPN8-FA4J-Y2LW-81LS',
+				'required'              => false,
+				'version'               => '2.0.1',
+				'force_activation'      => false,
+				'force_deactivation'    => false,
+				'external_url'          => 'https://www.advancedcustomfields.com/add-ons/options-page/',
+			) );
+		}
+		$config = array(
+			'id'                             => 'kili_tgmpa',
+			'default_path'                   => '',
+			'menu'                           => 'tgmpa-install-plugins',
+			'parent_slug'                    => 'plugins.php',
+			'capability'                     => 'edit_theme_options',
+			'has_notices'                    => true,
+			'dismissable'                    => true,
+			'dismiss_msg'                    => '',
+			'is_automatic'                   => true,
+			'message'                        => '',
+			'notice_can_install_required'    => _n_noop(
+				// translators: 1: plugin name(s).
+				'This plugin requires the following plugin: %1$s.',
+				'This plugin requires the following plugins: %1$s.',
+				'kili-core'
+			),
+			'notice_can_install_recommended' => _n_noop(
+				// translators: 1: plugin name(s).
+				'This plugin recommends the following plugin: %1$s.',
+				'This plugin recommends the following plugins: %1$s.',
+				'kili-core'
+			),
+		);
+		tgmpa( $plugins, $config );
 	}
 
 }
