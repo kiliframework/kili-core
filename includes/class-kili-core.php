@@ -6,7 +6,7 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://github.com/fabolivar
+ * @link       https://github.com/kiliframework/kili-core
  * @since      1.0.0
  *
  * @package    Kili_Core

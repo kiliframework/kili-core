@@ -6,7 +6,7 @@
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       https://github.com/fabolivar
+ * @link       https://github.com/kiliframework/kili-core
  * @since      1.0.0
  *
  * @package    Kili_Core

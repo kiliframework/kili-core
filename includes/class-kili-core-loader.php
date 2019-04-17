@@ -3,7 +3,7 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       https://github.com/fabolivar
+ * @link       https://github.com/kiliframework/kili-core
  * @since      1.0.0
  *
  * @package    Kili_Core
