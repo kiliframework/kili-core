@@ -76,7 +76,9 @@ class Kili_Core {
 
 		$this->load_dependencies();
 		$this->set_locale();
-		$this->define_admin_hooks();
+		if ( is_admin() ) {
+			$this->define_admin_hooks();
+		}
 		$this->define_public_hooks();
 
 	}
@@ -114,7 +116,9 @@ class Kili_Core {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-kili-core-admin.php';
+		if ( is_admin() ) {
+			require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-kili-core-admin.php';
+		}
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
