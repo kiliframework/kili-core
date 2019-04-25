@@ -10,6 +10,8 @@
  * @subpackage Kili_Core/public
  */
 
+require_once( plugin_dir_path( __DIR__ ) . 'includes/routes/class-kili-routes.php' );
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -40,6 +42,8 @@ class Kili_Core_Public {
 	 */
 	private $version;
 
+	public $routes;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -51,7 +55,8 @@ class Kili_Core_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+		$this->routes = new Kili_Routes();
+		$this->routes->add_filters();
 	}
 
 	/**
