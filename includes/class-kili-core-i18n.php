@@ -22,7 +22,7 @@
  * @since      1.0.0
  * @package    Kili_Core
  * @subpackage Kili_Core/includes
- * @author     Fabian Altahona <fabolivar@gmail.com>
+ * @author     Kili Team <hello@kiliframework.org>
  */
 class Kili_Core_i18n {
 

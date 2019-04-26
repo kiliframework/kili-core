@@ -19,7 +19,7 @@
  *
  * @package    Kili_Core
  * @subpackage Kili_Core/admin
- * @author     Rhonalf Martinez <rhonaldomaster@gmail.com>
+ * @author     Kili Team <hello@kiliframework.org>
  */
 
  class Kili_Layout {

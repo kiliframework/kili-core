@@ -20,7 +20,7 @@ require_once( 'vendor/class-tgm-plugin-activation.php' );
  *
  * @package    Kili_Core
  * @subpackage Kili_Core/admin
- * @author     Fabian Altahona <fabolivar@gmail.com>
+ * @author     Kili Team <hello@kiliframework.org>
  */
 class Kili_Core_Admin {
 

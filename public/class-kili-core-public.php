@@ -20,7 +20,7 @@ require_once( plugin_dir_path( __DIR__ ) . 'includes/routes/class-kili-routes.ph
  *
  * @package    Kili_Core
  * @subpackage Kili_Core/public
- * @author     Fabian Altahona <fabolivar@gmail.com>
+ * @author     Kili Team <hello@kiliframework.org>
  */
 class Kili_Core_Public {
 
