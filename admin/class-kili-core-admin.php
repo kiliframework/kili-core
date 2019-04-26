@@ -10,7 +10,7 @@
  * @subpackage Kili_Core/admin
  */
 
- require_once( 'vendor/class-tgm-plugin-activation.php' );
+require_once( 'vendor/class-tgm-plugin-activation.php' );
 
 /**
  * The admin-specific functionality of the plugin.
