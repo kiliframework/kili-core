@@ -80,3 +80,5 @@ function run_kili_core() {
 
 }
 run_kili_core();
+
+include_once(plugin_dir_path( __FILE__ ) . 'includes/rest-api.php');

@@ -71,6 +71,12 @@ class Kili_Core_Admin {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.js', array( 'jquery' ), $this->version, false );
+		$strings = array(
+			'enableKili' => __('Enable Kili', 'kili-core'),
+			'no' => __('No', 'kili-core'),
+			'yes' => __('Yes', 'kili-core'),
+		);
+		wp_localize_script( $this->plugin_name, 'KiliStrings', $strings );
 	}
 
 	public function add_actions() {
