@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Kili Core
  * Plugin URI:        https://github.com/kiliframework/kili-core/
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Framework code used to power Kili based WordPress themes.
  * Version:           1.0.0
  * Author:            Kili Team
  * Author URI:        https://www.kiliframework.org/
