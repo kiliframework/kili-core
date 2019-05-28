@@ -2,3 +2,13 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+.enable-kili-toggle {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.enable-kili-toggle__title {
+  font-weight: 700;
+  margin-right: 5px;
+}
