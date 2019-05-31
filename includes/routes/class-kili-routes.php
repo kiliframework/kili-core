@@ -70,6 +70,11 @@
 		}
 	}
 
+	/**
+	 * Add filters to the site
+	 *
+	 * @return void
+	 */
 	public function add_filters() {
 		$context = null;
 		if ( class_exists( 'Timber' ) ) {
@@ -91,6 +96,28 @@
 		}
 		// trim '_template' from end.
 		$type      = substr( current_filter(), 0, - 9 );
+		$template = $this->get_template( $type );
+		if ( strcasecmp( $template, '' ) === 0 ) {
+			return;
+		}
+		$this->do_render = false;
+		if ( class_exists( 'Timber' ) && false === stripos( $template, '.php' ) ) {
+			echo Timber::compile( $template, $this->context );
+			return ;
+		}
+		include_once( $template );
+	}
+
+
+	/**
+	 * Get the current view page template
+	 *
+	 * @param  mixed $type     Page type
+	 * @param  mixed $fallback Template file to use if there is no template for the type
+	 *
+	 * @return string Template file route
+	 */
+	private function get_template( $type = 'home', $fallback = '' ) {
 		$templates = array();
 		switch ( $type ) {
 			case '404':
@@ -112,15 +139,7 @@
 				$templates = array( $type . '.twig' );
 		}
 		$template = $this->locate_template( $templates, $fallback );
-		if ( strcasecmp( $template, '' ) === 0 ) {
-			return;
-		}
-		$this->do_render = false;
-		if ( strpos( $template, 'index.php' ) === false && class_exists( 'Timber' ) ) {
-			echo Timber::compile( $template, $this->context );
-			return ;
-		}
-		include_once( $template );
+		return $template;
 	}
 
 	/**
@@ -221,17 +240,30 @@
 			return $response;
 		}
 		if ( $options['is_preview'] && $options['is_user_logged_in'] ) {
-			if ( strcasecmp( 'post', $options['object']->post_type ) !== 0 || strcasecmp( 'page', $options['object']->post_type ) !== 0 ) {
-				return "single-{$options['object']->post_type}.twig";
-			} else if ( strcasecmp( 'page', $options['object']->post_type ) !== 0 ) {
-				return "{$options['type']}.twig";
-			}
-			return "{$options['type']}.twig";
+			$response = $this->get_protected_post_view_name( $options );
 		} elseif ( $options['object'] ) {
-			return "{$options['type']}-{$options['object']->post_type}.twig";
+			$response = "{$options['type']}-{$options['object']->post_type}.twig";
 		}
 		return $response;
 	}
+
+	/**
+	 * Return the protected post template file name
+	 *
+	 * @param  mixed $options Current page data
+	 *
+	 * @return string The template file name
+	 */
+	private function get_protected_post_view_name( $options ) {
+		$post_type = $options['object']->post_type;
+		if ( strcasecmp( 'post', $post_type ) !== 0 || strcasecmp( 'page', $post_type ) !== 0 ) {
+			return "single-{$post_type}.twig";
+		} else if ( strcasecmp( 'page', $post_type ) !== 0 ) {
+			return "{$options['type']}.twig";
+		}
+		return "{$options['type']}.twig";
+	}
+
 	/**
 	 * Return the view file name
 	 *
