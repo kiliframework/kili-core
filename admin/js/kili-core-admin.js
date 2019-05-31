@@ -53,7 +53,7 @@ Kili.Basic = (() => {
           '<div class="acf-switch js-kili-switch">' +
             '<span class="acf-switch-on">' + KiliStrings.yes + '</span>' +
             '<span class="acf-switch-off">' + KiliStrings.no + '</span>' +
-            '<div class="acf-switch-slider"></div>'
+            '<div class="acf-switch-slider"></div>' +
           '</div>' +
         '</label>' +
       '</div>';
@@ -76,7 +76,7 @@ Kili.Basic = (() => {
       toggleGutenbergEditor();
     }
     isActivated = ev.target.checked;
-    updatePostMeta();
+    Kili.Ajax.updatePostMeta();
     updateCheckboxUI();
   };
 
@@ -84,26 +84,7 @@ Kili.Basic = (() => {
     document.querySelector('.edit-post-visual-editor').classList.toggle(hiddenClass);
   };
 
-  const updatePostMeta = () => {
-    const data = {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: Kili.Ajax.getCurrentPostId(),
-        value: isActivated ? 'active' : 'inactive'
-      })
-    };
-    let ajax = fetch('/wp-json/' + Kili.Ajax.getApiSettings().customApiRoute + 'set-post-kili/', data);
-    ajax
-      .then((response) => {
-        return response.json();
-      })
-      .then((response) => console.log('%c Info ', 'color: white; background-color: #2274A5', (response == true ? 'Success' : 'Failed') + ' operation'))
-      .catch((error) => console.log('%c Error ', 'color: white; background-color: #D33F49', 'Error updating meta: ' + error));
-  };
+  const isKiliActive = () => isActivated;
 
   const init = () => {
     if (isActiveAnyEditor()) {
@@ -116,6 +97,7 @@ Kili.Basic = (() => {
     changeStatusCheck: changeStatusCheck,
     init: init,
     isActiveAnyEditor: isActiveAnyEditor,
+    isKiliActive: isKiliActive,
     setKiliStatus: setKiliStatus,
     toggleEditor: toggleEditor
   };
@@ -136,12 +118,13 @@ Kili.utils = (() => {
 
       if (typeof queryString[key] === 'undefined') {
         queryString[key] = decodeURIComponent(value);
+        continue;
       } else if (typeof queryString[key] === 'string') {
         var arr = [queryString[key], decodeURIComponent(value)];
         queryString[key] = arr;
-      } else {
-        queryString[key].push(decodeURIComponent(value));
+        continue;
       }
+      queryString[key].push(decodeURIComponent(value));
     }
     return queryString;
   };
@@ -151,7 +134,7 @@ Kili.utils = (() => {
   };
 })();
 
-Kili.Ajax = (($) => {
+Kili.Ajax = (() => {
   const apiRoute = 'api/v1/';
   let apiSettings = null;
   let adminURL = '';
@@ -198,6 +181,32 @@ Kili.Ajax = (($) => {
     }
   };
 
+  const updatePostMeta = () => {
+    const data = {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: getCurrentPostId(),
+        value: Kili.Basic.isKiliActive() ? 'active' : 'inactive'
+      })
+    };
+    let ajax = fetch('/wp-json/' + getApiSettings().customApiRoute + 'set-post-kili/', data);
+    ajax
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        let backgroundColor = response == true ? '2274A5' : 'D33F49';
+        console.log('%c Info ', 'color: white; background-color: #' + backgroundColor + '; border-radius: 4px;', (response == true ? 'Successful' : 'Failed') + ' operation');
+      })
+      .catch((error) => {
+        console.log('%c Error ', 'color: white; background-color: #D33F49; border-radius: 4px;', 'Error updating meta: ' + error);
+      });
+  };
+
   return {
     getAdminURL: getAdminURL,
     getApiSettings: getApiSettings,
@@ -205,9 +214,10 @@ Kili.Ajax = (($) => {
     init: init,
     setAdminURL: setAdminURL,
     setApiSettings: setApiSettings,
-    setCurrentPostId: setCurrentPostId
+    setCurrentPostId: setCurrentPostId,
+    updatePostMeta: updatePostMeta
   };
-})(jQuery);
+})();
 
 (function ($) {
   'use strict';
