@@ -191,33 +191,23 @@
 	 */
 	public function get_protected_view( $object, $type ) {
 		$view = '';
-		$pagename = get_query_var( 'pagename' );
-		$is_user_logged_in = is_user_logged_in();
-		$is_preview = get_query_var( 'preview' );
-		$this->context['post'] = new TimberPost();
 		$current_user = wp_get_current_user();
-		if ( is_page_template( 'page-templates/layout-builder.php' ) ) {
-			$this->context['is_kili'] = true;
-		}
-		if ( strcasecmp( $object->post_status, 'private' ) === 0 || strcasecmp( $object->post_status, 'draft' ) === 0 || strcasecmp( $object->post_status, 'future' ) === 0 || strcasecmp( $object->post_status, 'pending' ) === 0 ) {
-			$view = $this->get_protected_post_view( array(
-				'default' => '404.twig',
-				'is_preview' => $is_preview,
-				'is_user_logged_in' => $is_user_logged_in,
-				'object' => $object,
-				'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0 || current_user_can('editor') || current_user_can('administrator'),
-				'type' => $type,
-			) );
+		$settings = array(
+			'default' => '404.twig',
+			'is_preview' => get_query_var( 'preview' ),
+			'is_user_logged_in' => is_user_logged_in(),
+			'object' => $object,
+			'show' => false,
+			'type' => $type,
+		);
+		if ( $this->post_is_not_published( $object ) ) {
+			$settings['show'] = strcasecmp( '' . $current_user->ID, $object->post_author ) === 0 || current_user_can('editor') || current_user_can('administrator');
+			$view = $this->get_protected_post_view( $settings );
 		} elseif ( post_password_required( $object->ID ) ) {
-			$view = $this->get_protected_post_view( array(
-				'default' => "{$type}-password.twig",
-				'is_preview' => $is_preview,
-				'is_user_logged_in' => $is_user_logged_in,
-				'object' => $object,
-				'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0,
-				'type' => $type,
-			) );
-		} elseif ( ! $pagename && $object->ID ) {
+			$settings['default'] = $type . '-password.twig';
+			$settings['show'] = strcasecmp( '' . $current_user->ID, $object->post_author ) === 0;
+			$view = $this->get_protected_post_view( $settings );
+		} elseif ( ! get_query_var( 'pagename' ) && $object->ID ) {
 			$view = $this->get_page_view_name( array(
 				'object' => $object,
 				'type' => $type,
@@ -226,6 +216,28 @@
 			$view = str_ireplace( 'php', 'twig', basename( get_page_template_slug( $object->id ) ) );
 		}
 		return $view;
+	}
+
+	/**
+	 * Check if the post object is unpublished
+	 *
+	 * @param  mixed $post Post object.
+	 * @return boolean Whether the post is unpublished or not
+	 */
+	private function post_is_not_published( $post ) {
+		switch ($post->post_status) {
+			case 'private':
+			case 'draft':
+			case 'future':
+			case 'pending':
+				return true;
+				break;
+
+			default:
+				return false;
+				break;
+		}
+		return false;
 	}
 
 	/**
