@@ -191,17 +191,15 @@
 	 */
 	public function get_protected_view( $object, $type ) {
 		$view = '';
-		$current_user = wp_get_current_user();
 		$settings = array(
 			'default' => '404.twig',
 			'is_preview' => get_query_var( 'preview' ),
 			'is_user_logged_in' => is_user_logged_in(),
 			'object' => $object,
-			'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0,
+			'show' => $this->is_user_allowed_to_see( wp_get_current_user(), $object ),
 			'type' => $type,
 		);
 		if ( $this->post_is_not_published( $object ) ) {
-			$settings['show'] = $settings['show'] || current_user_can('editor') || current_user_can('administrator');
 			$view = $this->get_protected_post_view( $settings );
 		} elseif ( post_password_required( $object->ID ) ) {
 			$settings['default'] = $type . '-password.twig';
@@ -215,6 +213,25 @@
 			$view = str_ireplace( 'php', 'twig', basename( get_page_template_slug( $object->id ) ) );
 		}
 		return $view;
+	}
+
+	/**
+	 * Check if a user can see a post
+	 *
+	 * @param  mixed $user Current user object.
+	 * @param  mixed $post Post object.
+	 * @return boolean Whether the user can see the post or not
+	 */
+	public function is_user_allowed_to_see( $user, $post ) {
+		$is_allowed = false;
+		if ( strcasecmp( '' . $user->ID, $post->post_author ) === 0 ) {
+			$is_allowed = true;
+		} elseif ( current_user_can('editor') ) {
+			$is_allowed = true;
+		} elseif ( current_user_can('administrator') ) {
+			$is_allowed = true;
+		}
+		return $is_allowed;
 	}
 
 	/**
