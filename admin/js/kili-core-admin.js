@@ -71,11 +71,7 @@ Kili.Basic = {
       return;
     }
     document.querySelector('.js-toggle-kili').checked = Kili.isActivated;
-    if (Kili.isClassicEditorEnabled) {
-      Kili.Basic.toggleClassicEditor();
-    } else if (Kili.isGutenbergEditorEnabled) {
-      Kili.Basic.toggleGutenbergEditor();
-    }
+    Kili.Basic.toggleEditorVisibility();
     Kili.Basic.updateCheckboxUI();
   },
   checkActiveEditor: () => {
@@ -128,14 +124,18 @@ Kili.Basic = {
   toggleEditor: (ev) => {
     if (!Kili.Basic.isActiveAnyEditor()) {
       return;
-    } else if (Kili.isClassicEditorEnabled) {
+    }
+    Kili.Basic.toggleEditorVisibility();
+    Kili.isActivated = ev.target.checked;
+    Kili.Ajax.updatePostMeta();
+    Kili.Basic.updateCheckboxUI();
+  },
+  toggleEditorVisibility: () => {
+    if (Kili.isClassicEditorEnabled) {
       Kili.Basic.toggleClassicEditor();
     } else if (Kili.isGutenbergEditorEnabled) {
       Kili.Basic.toggleGutenbergEditor();
     }
-    Kili.isActivated = ev.target.checked;
-    Kili.Ajax.updatePostMeta();
-    Kili.Basic.updateCheckboxUI();
   },
   toggleGutenbergEditor: () => {
     document.querySelector('.edit-post-visual-editor').classList.toggle(Kili.hiddenClass);

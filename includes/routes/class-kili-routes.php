@@ -197,15 +197,14 @@
 			'is_preview' => get_query_var( 'preview' ),
 			'is_user_logged_in' => is_user_logged_in(),
 			'object' => $object,
-			'show' => false,
+			'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0,
 			'type' => $type,
 		);
 		if ( $this->post_is_not_published( $object ) ) {
-			$settings['show'] = strcasecmp( '' . $current_user->ID, $object->post_author ) === 0 || current_user_can('editor') || current_user_can('administrator');
+			$settings['show'] = $settings['show'] || current_user_can('editor') || current_user_can('administrator');
 			$view = $this->get_protected_post_view( $settings );
 		} elseif ( post_password_required( $object->ID ) ) {
 			$settings['default'] = $type . '-password.twig';
-			$settings['show'] = strcasecmp( '' . $current_user->ID, $object->post_author ) === 0;
 			$view = $this->get_protected_post_view( $settings );
 		} elseif ( ! get_query_var( 'pagename' ) && $object->ID ) {
 			$view = $this->get_page_view_name( array(
