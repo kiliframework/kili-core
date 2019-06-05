@@ -30,9 +30,7 @@ Kili.Ajax = {
   checkIfKiliWasActivated: () => {
     let ajax = fetch('/wp-json/' + Kili.getApiSettings().customApiRoute + 'post-has-kili/' + Kili.getCurrentPostId());
     ajax
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((response) => {
         Kili.Basic.setKiliStatus(response == 'active');
         Kili.Basic.changeStatusCheck();
@@ -52,9 +50,7 @@ Kili.Ajax = {
     };
     let ajax = fetch('/wp-json/' + Kili.getApiSettings().customApiRoute + 'set-post-kili/', data);
     ajax
-      .then((response) => {
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((response) => {
         let backgroundColor = response == true ? '2274A5' : 'D33F49';
         console.log('%c Info ', 'color: white; background-color: #' + backgroundColor + '; border-radius: 4px;', (response == true ? 'Successful' : 'Failed') + ' operation');
@@ -112,9 +108,7 @@ Kili.Basic = {
       typeof location.post !== 'undefined' &&
       (pagenow === 'page' || pagenow === 'post');
   },
-  isKiliActive: () => {
-    return Kili.isActivated;
-  },
+  isKiliActive: () => Kili.isActivated,
   setKiliStatus: (status) => {
     Kili.isActivated = status;
   },
@@ -146,7 +140,7 @@ Kili.Basic = {
       return;
     }
     document.querySelector('.js-kili-switch').classList.remove('-on');
-  },
+  }
 };
 
 Kili.utils = {
@@ -176,14 +170,15 @@ Kili.utils = {
 };
 
 // Init Kili
-(function ($) {
-  'use strict';
-  $(window).load(() => {
-    Kili.Basic.init();
-    if (Kili.Basic.isActiveAnyEditor()) {
-      Kili.init();
-      Kili.Ajax.checkIfKiliWasActivated();
-    }
-  });
-  $(document).on('change', '.js-toggle-kili', Kili.Basic.toggleEditor);
-})(jQuery);
+document.addEventListener('DOMContentLoaded', () => {
+  Kili.Basic.init();
+  if (Kili.Basic.isActiveAnyEditor()) {
+    Kili.init();
+    Kili.Ajax.checkIfKiliWasActivated();
+  }
+});
+document.addEventListener('change', (event) => {
+  if (event.target.className.indexOf('js-toggle-kili') > -1) {
+    Kili.Basic.toggleEditor(event);
+  }
+});
