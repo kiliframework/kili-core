@@ -119,7 +119,7 @@ Kili.UserInterface = {
   isActiveAnyEditor: () => {
     const LOCATION = Kili.utils.parsedLocation();
     return typeof wpActiveEditor !== 'undefined' &&
-      typeof LOCATION.post !== 'undefined' &&
+      (typeof LOCATION.post !== 'undefined' || Kili.utils.isNewPostPage()) &&
       (pagenow === 'page' || pagenow === 'post');
   },
   isKiliActive: () => Kili.isActivated,
@@ -160,6 +160,14 @@ Kili.UserInterface = {
 };
 
 Kili.utils = {
+  isNewPostPage: () => {
+    let location = window.location.href;
+    let isNewPostPage = false;
+    if (location.indexOf('post-new.php?post_type=') > -1) {
+      isNewPostPage = true;
+    }
+    return isNewPostPage;
+  },
   parsedLocation: () => {
     if (typeof location.search === 'undefined') {
       return;
