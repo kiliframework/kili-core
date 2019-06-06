@@ -70,7 +70,7 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.js', array( 'jquery' ), $this->version, false );
 		$strings = array(
 			'enableKili' => __('Enable Kili', 'kili-core'),
 			'no' => __('No', 'kili-core'),
@@ -82,7 +82,20 @@ class Kili_Core_Admin {
 	}
 
 	public function add_actions() {
-		add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
+		add_action( 'tgmpa_register', array( $this, 'kili_register_required_plugins' ) );
+		add_action('acf/save_post', array( $this, 'kili_acf_save_post' ), 9999);
+	}
+
+	public function kili_acf_save_post() {
+		if (! function_exists( 'get_fields' )) {
+			return;
+		}
+		if (empty($_POST['acf'])) {
+			return;
+		}
+		$acf_fields = get_fields($post_id);
+
+		var_dump($acf_fields);
 	}
 
 	public function kili_register_required_plugins() {

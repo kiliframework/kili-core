@@ -1,6 +1,6 @@
 let Kili = {
   apiSettings: null,
-  hiddenClass: 'hidden',
+  hiddenClass: 'kili-hidden',
   isActivated: false,
   isClassicEditorEnabled: false,
   isDebuggingOn: false,
@@ -36,6 +36,11 @@ Kili.Ajax = {
       .then((response) => {
         Kili.UserInterface.setKiliStatus(response == 'active');
         Kili.UserInterface.changeStatusCheck();
+      })
+      .catch((error) => {
+        if (Kili.isDebuggingOn) {
+          console.log('%c Error ', 'color: white; background-color: #D33F49; border-radius: 4px;', 'Error getting meta: ' + error);
+        }
       });
   },
   getBaseRoute: () => {
