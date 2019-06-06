@@ -70,6 +70,11 @@
 		}
 	}
 
+	/**
+	 * Add filters to the site
+	 *
+	 * @return void
+	 */
 	public function add_filters() {
 		$context = null;
 		if ( class_exists( 'Timber' ) ) {
@@ -91,6 +96,28 @@
 		}
 		// trim '_template' from end.
 		$type      = substr( current_filter(), 0, - 9 );
+		$template = $this->get_template( $type );
+		if ( strcasecmp( $template, '' ) === 0 ) {
+			return;
+		}
+		$this->do_render = false;
+		if ( class_exists( 'Timber' ) && false === stripos( $template, '.php' ) ) {
+			echo Timber::compile( $template, $this->context );
+			return ;
+		}
+		include_once( $template );
+	}
+
+
+	/**
+	 * Get the current view page template
+	 *
+	 * @param  mixed $type     Page type
+	 * @param  mixed $fallback Template file to use if there is no template for the type
+	 *
+	 * @return string Template file route
+	 */
+	private function get_template( $type = 'home', $fallback = '' ) {
 		$templates = array();
 		switch ( $type ) {
 			case '404':
@@ -112,15 +139,7 @@
 				$templates = array( $type . '.twig' );
 		}
 		$template = $this->locate_template( $templates, $fallback );
-		if ( strcasecmp( $template, '' ) === 0 ) {
-			return;
-		}
-		$this->do_render = false;
-		if ( strpos( $template, 'index.php' ) === false && class_exists( 'Timber' ) ) {
-			echo Timber::compile( $template, $this->context );
-			return ;
-		}
-		include_once( $template );
+		return $template;
 	}
 
 	/**
@@ -172,33 +191,20 @@
 	 */
 	public function get_protected_view( $object, $type ) {
 		$view = '';
-		$pagename = get_query_var( 'pagename' );
-		$is_user_logged_in = is_user_logged_in();
-		$is_preview = get_query_var( 'preview' );
-		$this->context['post'] = new TimberPost();
-		$current_user = wp_get_current_user();
-		if ( is_page_template( 'page-templates/layout-builder.php' ) ) {
-			$this->context['is_kili'] = true;
-		}
-		if ( strcasecmp( $object->post_status, 'private' ) === 0 || strcasecmp( $object->post_status, 'draft' ) === 0 || strcasecmp( $object->post_status, 'future' ) === 0 || strcasecmp( $object->post_status, 'pending' ) === 0 ) {
-			$view = $this->get_protected_post_view( array(
-				'default' => '404.twig',
-				'is_preview' => $is_preview,
-				'is_user_logged_in' => $is_user_logged_in,
-				'object' => $object,
-				'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0 || current_user_can('editor') || current_user_can('administrator'),
-				'type' => $type,
-			) );
+		$settings = array(
+			'default' => '404.twig',
+			'is_preview' => get_query_var( 'preview' ),
+			'is_user_logged_in' => is_user_logged_in(),
+			'object' => $object,
+			'show' => $this->is_user_allowed_to_see( wp_get_current_user(), $object ),
+			'type' => $type,
+		);
+		if ( $this->post_is_not_published( $object ) ) {
+			$view = $this->get_protected_post_view( $settings );
 		} elseif ( post_password_required( $object->ID ) ) {
-			$view = $this->get_protected_post_view( array(
-				'default' => "{$type}-password.twig",
-				'is_preview' => $is_preview,
-				'is_user_logged_in' => $is_user_logged_in,
-				'object' => $object,
-				'show' => strcasecmp( '' . $current_user->ID, $object->post_author ) === 0,
-				'type' => $type,
-			) );
-		} elseif ( ! $pagename && $object->ID ) {
+			$settings['default'] = $type . '-password.twig';
+			$view = $this->get_protected_post_view( $settings );
+		} elseif ( ! get_query_var( 'pagename' ) && $object->ID ) {
 			$view = $this->get_page_view_name( array(
 				'object' => $object,
 				'type' => $type,
@@ -207,6 +213,47 @@
 			$view = str_ireplace( 'php', 'twig', basename( get_page_template_slug( $object->id ) ) );
 		}
 		return $view;
+	}
+
+	/**
+	 * Check if a user can see a post
+	 *
+	 * @param  mixed $user Current user object.
+	 * @param  mixed $post Post object.
+	 * @return boolean Whether the user can see the post or not
+	 */
+	public function is_user_allowed_to_see( $user, $post ) {
+		$is_allowed = false;
+		if ( strcasecmp( '' . $user->ID, $post->post_author ) === 0 ) {
+			$is_allowed = true;
+		} elseif ( current_user_can('editor') ) {
+			$is_allowed = true;
+		} elseif ( current_user_can('administrator') ) {
+			$is_allowed = true;
+		}
+		return $is_allowed;
+	}
+
+	/**
+	 * Check if the post object is unpublished
+	 *
+	 * @param  mixed $post Post object.
+	 * @return boolean Whether the post is unpublished or not
+	 */
+	private function post_is_not_published( $post ) {
+		switch ($post->post_status) {
+			case 'private':
+			case 'draft':
+			case 'future':
+			case 'pending':
+				return true;
+				break;
+
+			default:
+				return false;
+				break;
+		}
+		return false;
 	}
 
 	/**
@@ -221,17 +268,30 @@
 			return $response;
 		}
 		if ( $options['is_preview'] && $options['is_user_logged_in'] ) {
-			if ( strcasecmp( 'post', $options['object']->post_type ) !== 0 || strcasecmp( 'page', $options['object']->post_type ) !== 0 ) {
-				return "single-{$options['object']->post_type}.twig";
-			} else if ( strcasecmp( 'page', $options['object']->post_type ) !== 0 ) {
-				return "{$options['type']}.twig";
-			}
-			return "{$options['type']}.twig";
+			$response = $this->get_protected_post_view_name( $options );
 		} elseif ( $options['object'] ) {
-			return "{$options['type']}-{$options['object']->post_type}.twig";
+			$response = "{$options['type']}-{$options['object']->post_type}.twig";
 		}
 		return $response;
 	}
+
+	/**
+	 * Return the protected post template file name
+	 *
+	 * @param  mixed $options Current page data
+	 *
+	 * @return string The template file name
+	 */
+	private function get_protected_post_view_name( $options ) {
+		$post_type = $options['object']->post_type;
+		if ( strcasecmp( 'post', $post_type ) !== 0 || strcasecmp( 'page', $post_type ) !== 0 ) {
+			return "single-{$post_type}.twig";
+		} else if ( strcasecmp( 'page', $post_type ) !== 0 ) {
+			return "{$options['type']}.twig";
+		}
+		return "{$options['type']}.twig";
+	}
+
 	/**
 	 * Return the view file name
 	 *

@@ -70,7 +70,7 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
 		$strings = array(
 			'enableKili' => __('Enable Kili', 'kili-core'),
 			'no' => __('No', 'kili-core'),
