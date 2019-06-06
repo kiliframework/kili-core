@@ -3,6 +3,7 @@ let Kili = {
   hiddenClass: 'hidden',
   isActivated: false,
   isClassicEditorEnabled: false,
+  isDebuggingOn: false,
   isGutenbergEditorEnabled: false,
   postId: 0,
 
@@ -32,12 +33,12 @@ Kili.Ajax = {
     ajax
       .then((response) => response.json())
       .then((response) => {
-        Kili.Basic.setKiliStatus(response == 'active');
-        Kili.Basic.changeStatusCheck();
+        Kili.UserInterface.setKiliStatus(response == 'active');
+        Kili.UserInterface.changeStatusCheck();
       });
   },
   updatePostMeta: () => {
-    const data = {
+    const DATA = {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
@@ -45,30 +46,35 @@ Kili.Ajax = {
       },
       body: JSON.stringify({
         id: Kili.getCurrentPostId(),
-        value: Kili.Basic.isKiliActive() ? 'active' : 'inactive'
+        value: Kili.UserInterface.isKiliActive() ? 'active' : 'inactive'
       })
     };
-    let ajax = fetch('/wp-json/' + Kili.getApiSettings().customApiRoute + 'set-post-kili/', data);
+    const URL = '/wp-json/' + Kili.getApiSettings().customApiRoute + 'set-post-kili/';
+    let ajax = fetch(URL, DATA);
     ajax
       .then((response) => response.json())
       .then((response) => {
-        let backgroundColor = response == true ? '2274A5' : 'D33F49';
-        console.log('%c Info ', 'color: white; background-color: #' + backgroundColor + '; border-radius: 4px;', (response == true ? 'Successful' : 'Failed') + ' operation');
+        if (Kili.isDebuggingOn) {
+          let backgroundColor = (response == true) ? '2274A5' : 'D33F49';
+          console.log('%c Info ', 'color: white; background-color: #' + backgroundColor + '; border-radius: 4px;', message);
+        }
       })
       .catch((error) => {
-        console.log('%c Error ', 'color: white; background-color: #D33F49; border-radius: 4px;', 'Error updating meta: ' + error);
+        if (Kili.isDebuggingOn) {
+          console.log('%c Error ', 'color: white; background-color: #D33F49; border-radius: 4px;', 'Error updating meta: ' + error);
+        }
       });
   }
 };
 
-Kili.Basic = {
+Kili.UserInterface = {
   changeStatusCheck: () => {
     if (!Kili.isActivated) {
       return;
     }
     document.querySelector('.js-toggle-kili').checked = Kili.isActivated;
-    Kili.Basic.toggleEditorVisibility();
-    Kili.Basic.updateCheckboxUI();
+    Kili.UserInterface.toggleEditorVisibility();
+    Kili.UserInterface.updateCheckboxUI();
   },
   checkActiveEditor: () => {
     if (document.querySelector('#titlediv')) {
@@ -78,15 +84,15 @@ Kili.Basic = {
     Kili.isGutenbergEditorEnabled = true;
   },
   init: () => {
-    if (!Kili.Basic.isActiveAnyEditor()) {
+    if (!Kili.UserInterface.isActiveAnyEditor()) {
       return;
     }
-    Kili.Basic.checkActiveEditor();
-    Kili.Basic.insertButtonInPostInterface();
+    Kili.UserInterface.checkActiveEditor();
+    Kili.UserInterface.insertButtonInPostInterface();
   },
   insertButtonInPostInterface: () => {
     let containerSelector = '.edit-post-header__settings';
-    const buttonsHtml = '<div class="' + (Kili.isClassicEditorEnabled ? 'misc-pub-section' : 'components-button') + ' enable-kili-toggle">' +
+    const BUTTONS_HTML = '<div class="' + (Kili.isClassicEditorEnabled ? 'misc-pub-section' : 'components-button') + ' enable-kili-toggle">' +
       '<label class="enable-kili-toggle__title" for="js-toggle-kili">' + KiliStrings.enableKili + '</label> ' +
       '<label>' +
       '<input type="checkbox" id="enable_kili" name="enable_kili" value="1" class="acf-switch-input js-toggle-kili" autocomplete="off">' +
@@ -100,12 +106,12 @@ Kili.Basic = {
     if (Kili.isClassicEditorEnabled) {
       containerSelector = '#misc-publishing-actions';
     }
-    document.querySelector(containerSelector).insertAdjacentHTML('beforeend', buttonsHtml);
+    document.querySelector(containerSelector).insertAdjacentHTML('beforeend', BUTTONS_HTML);
   },
   isActiveAnyEditor: () => {
-    const location = Kili.utils.parsedLocation();
+    const LOCATION = Kili.utils.parsedLocation();
     return typeof wpActiveEditor !== 'undefined' &&
-      typeof location.post !== 'undefined' &&
+      typeof LOCATION.post !== 'undefined' &&
       (pagenow === 'page' || pagenow === 'post');
   },
   isKiliActive: () => Kili.isActivated,
@@ -116,19 +122,19 @@ Kili.Basic = {
     document.querySelector('#postdivrich').classList.toggle(Kili.hiddenClass);
   },
   toggleEditor: (ev) => {
-    if (!Kili.Basic.isActiveAnyEditor()) {
+    if (!Kili.UserInterface.isActiveAnyEditor()) {
       return;
     }
-    Kili.Basic.toggleEditorVisibility();
+    Kili.UserInterface.toggleEditorVisibility();
     Kili.isActivated = ev.target.checked;
     Kili.Ajax.updatePostMeta();
-    Kili.Basic.updateCheckboxUI();
+    Kili.UserInterface.updateCheckboxUI();
   },
   toggleEditorVisibility: () => {
     if (Kili.isClassicEditorEnabled) {
-      Kili.Basic.toggleClassicEditor();
+      Kili.UserInterface.toggleClassicEditor();
     } else if (Kili.isGutenbergEditorEnabled) {
-      Kili.Basic.toggleGutenbergEditor();
+      Kili.UserInterface.toggleGutenbergEditor();
     }
   },
   toggleGutenbergEditor: () => {
@@ -148,12 +154,12 @@ Kili.utils = {
     if (typeof location.search === 'undefined') {
       return;
     }
-    const vars = location.search.substring(1).split('&');
+    const VARS = location.search.substring(1).split('&');
     let queryString = {};
-    for (let i = 0; i < vars.length; i++) {
-      const pair = vars[i].split('=');
-      const key = decodeURIComponent(pair[0]);
-      const value = decodeURIComponent(pair[1]);
+    for (let i = 0; i < VARS.length; i++) {
+      let pair = VARS[i].split('=');
+      let key = decodeURIComponent(pair[0]);
+      let value = decodeURIComponent(pair[1]);
 
       if (typeof queryString[key] === 'undefined') {
         queryString[key] = decodeURIComponent(value);
@@ -171,14 +177,14 @@ Kili.utils = {
 
 // Init Kili
 document.addEventListener('DOMContentLoaded', () => {
-  Kili.Basic.init();
-  if (Kili.Basic.isActiveAnyEditor()) {
+  Kili.UserInterface.init();
+  if (Kili.UserInterface.isActiveAnyEditor()) {
     Kili.init();
     Kili.Ajax.checkIfKiliWasActivated();
   }
 });
 document.addEventListener('change', (event) => {
   if (event.target.className.indexOf('js-toggle-kili') > -1) {
-    Kili.Basic.toggleEditor(event);
+    Kili.UserInterface.toggleEditor(event);
   }
 });
