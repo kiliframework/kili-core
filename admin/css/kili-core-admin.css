@@ -17,3 +17,8 @@
   font-weight: 700;
   margin-right: 5px;
 }
+
+.kili-hidden {
+  height: 0;
+  opacity: 0;
+}

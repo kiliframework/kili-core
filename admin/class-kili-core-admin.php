@@ -11,6 +11,7 @@
  */
 
 require_once( 'vendor/class-tgm-plugin-activation.php' );
+require_once( 'class-kili-blocks.php' );
 
 /**
  * The admin-specific functionality of the plugin.
@@ -70,7 +71,7 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.js', array( 'jquery' ), $this->version, false );
 		$strings = array(
 			'enableKili' => __('Enable Kili', 'kili-core'),
 			'no' => __('No', 'kili-core'),
@@ -81,10 +82,52 @@ class Kili_Core_Admin {
 		wp_localize_script( $this->plugin_name, 'KiliStrings', $strings );
 	}
 
+	/**
+	 * Add plugin actions
+	 *
+	 * @return void
+	 */
 	public function add_actions() {
-		add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
+		add_action( 'tgmpa_register', array( $this, 'kili_register_required_plugins' ) );
+		add_action( 'acf/save_post', array( $this, 'kili_acf_save_post' ), 20);
 	}
 
+	/**
+	 * Callback for acf/save_post action.
+	 * Check post/page custom blocks and replace post/page content with the blocks html
+	 *
+	 * @param  mixed $post_id Current post/page
+	 *
+	 * @return void
+	 */
+	public function kili_acf_save_post ( $post_id ) {
+		if ( ! function_exists( 'get_fields' ) ) {
+			return;
+		}
+		if ( empty( $_POST['acf'] ) ) {
+			return;
+		}
+		$is_active = get_post_meta( $post_id, 'enable_kili', true );
+		remove_action('acf/save_post', 'kili_acf_save_post', 20 );
+		if ( strcasecmp( $is_active, 'active' ) === 0 ) {
+			$kili_blocks = new Kili_Blocks( $post_id );
+			$blocks_html_content = $kili_blocks->get_post_html();
+			if ( strcasecmp( $blocks_html_content, '' ) != 0 ) {
+				$content = array(
+					'ID' => $post_id,
+					'post_content' => $blocks_html_content,
+				);
+				wp_update_post($content);
+			}
+		}
+		add_action( 'acf/save_post', array( $this, 'kili_acf_save_post' ), 20 );
+	}
+
+	/**
+	 * Register Kili required plugins
+	 *
+	 * @return void
+	 */
 	public function kili_register_required_plugins() {
 		$plugins = array(
 			array(
