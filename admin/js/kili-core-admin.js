@@ -29,13 +29,18 @@ let Kili = {
 
 Kili.Ajax = {
   checkIfKiliWasActivated: () => {
-    let ajax = fetch('/wp-json/' + Kili.getApiSettings().customApiRoute + 'post-has-kili/' + Kili.getCurrentPostId());
+    const ROUTE = Kili.Ajax.getBaseRoute();
+    let ajax = fetch(ROUTE + 'post-has-kili/' + Kili.getCurrentPostId());
     ajax
       .then((response) => response.json())
       .then((response) => {
         Kili.UserInterface.setKiliStatus(response == 'active');
         Kili.UserInterface.changeStatusCheck();
       });
+  },
+  getBaseRoute: () => {
+    const API_SETTINGS = Kili.getApiSettings();
+    return API_SETTINGS.root + API_SETTINGS.customApiRoute;
   },
   updatePostMeta: () => {
     const DATA = {
@@ -49,17 +54,20 @@ Kili.Ajax = {
         value: Kili.UserInterface.isKiliActive() ? 'active' : 'inactive'
       })
     };
-    const URL = '/wp-json/' + Kili.getApiSettings().customApiRoute + 'set-post-kili/';
-    let ajax = fetch(URL, DATA);
+    const ROUTE = Kili.Ajax.getBaseRoute();
+    let ajax = fetch(ROUTE + 'set-post-kili/', DATA);
     ajax
       .then((response) => response.json())
       .then((response) => {
+        let message = (response == true) ? KiliStrings.toggleKiliSuccess : KiliStrings.toggleKiliError;
+        wp.a11y.speak(message, 'polite');
         if (Kili.isDebuggingOn) {
           let backgroundColor = (response == true) ? '2274A5' : 'D33F49';
           console.log('%c Info ', 'color: white; background-color: #' + backgroundColor + '; border-radius: 4px;', message);
         }
       })
       .catch((error) => {
+        wp.a11y.speak(KiliStrings.toggleKiliError, 'assertive');
         if (Kili.isDebuggingOn) {
           console.log('%c Error ', 'color: white; background-color: #D33F49; border-radius: 4px;', 'Error updating meta: ' + error);
         }
@@ -119,7 +127,9 @@ Kili.UserInterface = {
     Kili.isActivated = status;
   },
   toggleClassicEditor: () => {
-    document.querySelector('#postdivrich').classList.toggle(Kili.hiddenClass);
+    if (document.querySelector('#postdivrich')) {
+      document.querySelector('#postdivrich').classList.toggle(Kili.hiddenClass);
+    }
   },
   toggleEditor: (ev) => {
     if (!Kili.UserInterface.isActiveAnyEditor()) {

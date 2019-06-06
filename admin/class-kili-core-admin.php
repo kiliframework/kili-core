@@ -74,6 +74,8 @@ class Kili_Core_Admin {
 		$strings = array(
 			'enableKili' => __('Enable Kili', 'kili-core'),
 			'no' => __('No', 'kili-core'),
+			'toggleKiliError' => __('There was an error while toggling Kili', 'kili-core'),
+			'toggleKiliSuccess' => __('Successful Kili toggling', 'kili-core'),
 			'yes' => __('Yes', 'kili-core'),
 		);
 		wp_localize_script( $this->plugin_name, 'KiliStrings', $strings );
