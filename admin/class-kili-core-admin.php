@@ -11,6 +11,7 @@
  */
 
 require_once( 'vendor/class-tgm-plugin-activation.php' );
+require_once( 'class-kili-blocks.php' );
 
 /**
  * The admin-specific functionality of the plugin.
@@ -83,19 +84,30 @@ class Kili_Core_Admin {
 
 	public function add_actions() {
 		add_action( 'tgmpa_register', array( $this, 'kili_register_required_plugins' ) );
-		add_action('acf/save_post', array( $this, 'kili_acf_save_post' ), 9999);
+		add_action( 'acf/save_post', array( $this, 'kili_acf_save_post' ), 20);
 	}
 
-	public function kili_acf_save_post() {
-		if (! function_exists( 'get_fields' )) {
+	public function kili_acf_save_post ( $post_id ) {
+		if ( ! function_exists( 'get_fields' ) ) {
 			return;
 		}
-		if (empty($_POST['acf'])) {
+		if ( empty( $_POST['acf'] ) ) {
 			return;
 		}
-		$acf_fields = get_fields($post_id);
-
-		var_dump($acf_fields);
+		$is_active = get_post_meta( $post_id, 'enable_kili', true );
+		remove_action('acf/save_post', 'kili_acf_save_post', 20 );
+		if ( strcasecmp( $is_active, 'active' ) === 0 ) {
+			$kili_blocks = new Kili_Blocks( $post_id );
+			$blocks_html_content = $kili_blocks->get_post_html();
+			if ( strcasecmp( $blocks_html_content, '' ) != 0 ) {
+				$content = array(
+					'ID' => $post_id,
+					'post_content' => $blocks_html_content,
+				);
+				wp_update_post($content);
+			}
+		}
+		add_action( 'acf/save_post', array( $this, 'kili_acf_save_post' ), 20 );
 	}
 
 	public function kili_register_required_plugins() {

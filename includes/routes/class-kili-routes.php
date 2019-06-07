@@ -78,7 +78,7 @@
 	public function add_filters() {
 		$context = null;
 		if ( class_exists( 'Timber' ) ) {
-			$context = Timber::get_context();
+			$this->context = Timber::get_context();
 		}
 		$this->process_view( $context );
 	}
@@ -102,6 +102,7 @@
 		}
 		$this->do_render = false;
 		if ( class_exists( 'Timber' ) && false === stripos( $template, '.php' ) ) {
+			$this->context['post'] = new TimberPost();
 			echo Timber::compile( $template, $this->context );
 			return ;
 		}
