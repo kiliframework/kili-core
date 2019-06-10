@@ -72,6 +72,10 @@ class Kili_Core_Admin {
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
 		$strings = array(
+			'disableKili' => __('Disable Kili', 'kili-core'),
+			'enableKili' => __('Enable Kili', 'kili-core'),
+			'kiliIsEnabled' => __('Kili is now enabled', 'kili-core'),
+			'kiliIsDisabled' => __('Kili is now disabled', 'kili-core'),
 			'enableKili' => __('Enable Kili', 'kili-core'),
 			'no' => __('No', 'kili-core'),
 			'toggleKiliError' => __('There was an error while toggling Kili', 'kili-core'),
@@ -83,6 +87,68 @@ class Kili_Core_Admin {
 
 	public function add_actions() {
 		add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
+		add_action( 'add_meta_boxes', array($this, 'kili_insert_actions_box') );
+	}
+
+	/**
+	 * Insert metaboxes in admin interface
+	 *
+	 * @return void
+	 */
+	public function kili_insert_actions_box() {
+		$is_classic_editor_active = $this->is_classic_editor_plugin_active();
+		if ( ! $is_classic_editor_active ) {
+			return;
+		}
+		$screens = ['post', 'page'];
+		foreach ($screens as $screen) {
+			add_meta_box( 'kili-actions',
+				__( 'Kili actions', 'kili-core' ),
+				array( $this, 'kili_get_actions_box_html' ),
+				$screen,
+				'side',
+				'high'
+			);
+		}
+	}
+
+	/**
+	 * Create metabox in editor
+	 *
+	 * @param $post Current post object.
+	 *
+	 * @return void
+	 */
+	public function kili_get_actions_box_html( $post ) {
+		?>
+		<div class="enable-kili-toggle">
+			<label class="enable-kili-toggle__title" for="js-toggle-kili"><?php echo __('Enable Kili', 'kili-core'); ?></label>
+			<label>
+				<input type="checkbox" id="enable_kili" name="enable_kili" value="1" class="acf-switch-input js-toggle-kili" autocomplete="off" aria-label="<?php echo __('Enable Kili', 'kili-core'); ?>">
+				<div class="acf-switch js-kili-switch">
+					<span class="acf-switch-on"><?php echo __('Yes', 'kili-core'); ?></span>
+					<span class="acf-switch-off"><?php echo __('No', 'kili-core'); ?></span>
+					<div class="acf-switch-slider"></div>
+				</div>
+			</label>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Check if Classic Editor plugin is active.
+	 *
+	 * @return bool
+	 */
+	function is_classic_editor_plugin_active() {
+		global $current_screen;
+		$current_screen = get_current_screen();
+		if ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) {
+			return false;
+		} elseif ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() ) {
+			return false;
+		}
+		return true;
 	}
 
 	public function kili_register_required_plugins() {

@@ -77,12 +77,12 @@ Kili.Ajax = {
 
 Kili.UserInterface = {
   changeStatusCheck: () => {
+    Kili.UserInterface.updateCheckboxUI();
     if (!Kili.isActivated) {
       return;
     }
     document.querySelector('.js-toggle-kili').checked = Kili.isActivated;
     Kili.UserInterface.toggleEditorVisibility();
-    Kili.UserInterface.updateCheckboxUI();
   },
   checkActiveEditor: () => {
     if (document.querySelector('#titlediv')) {
@@ -99,11 +99,13 @@ Kili.UserInterface = {
     Kili.UserInterface.insertButtonInPostInterface();
   },
   insertButtonInPostInterface: () => {
-    let containerSelector = '.edit-post-header__settings';
+    if (Kili.isClassicEditorEnabled) {
+      return;
+    }
     const BUTTONS_HTML = '<div class="' + (Kili.isClassicEditorEnabled ? 'misc-pub-section' : 'components-button') + ' enable-kili-toggle">' +
       '<label class="enable-kili-toggle__title" for="js-toggle-kili">' + KiliStrings.enableKili + '</label> ' +
       '<label>' +
-      '<input type="checkbox" id="enable_kili" name="enable_kili" value="1" class="acf-switch-input js-toggle-kili" autocomplete="off">' +
+      '<input type="checkbox" id="enable_kili" name="enable_kili" value="1" class="acf-switch-input js-toggle-kili" autocomplete="off" aria-label="' + KiliStrings.enableKili + '">' +
       '<div class="acf-switch js-kili-switch">' +
       '<span class="acf-switch-on">' + KiliStrings.yes + '</span>' +
       '<span class="acf-switch-off">' + KiliStrings.no + '</span>' +
@@ -111,10 +113,7 @@ Kili.UserInterface = {
       '</div>' +
       '</label>' +
       '</div>';
-    if (Kili.isClassicEditorEnabled) {
-      containerSelector = '#misc-publishing-actions';
-    }
-    document.querySelector(containerSelector).insertAdjacentHTML('beforeend', BUTTONS_HTML);
+    document.querySelector('.edit-post-header__settings').insertAdjacentHTML('beforeend', BUTTONS_HTML);
   },
   isActiveAnyEditor: () => {
     const LOCATION = Kili.utils.parsedLocation();
@@ -148,9 +147,14 @@ Kili.UserInterface = {
     }
   },
   toggleGutenbergEditor: () => {
+    document.querySelector('.edit-post-sidebar__panel-tab').click();
     document.querySelector('.edit-post-visual-editor').classList.toggle(Kili.hiddenClass);
   },
   updateCheckboxUI: () => {
+    let message = Kili.isActivated ? KiliStrings.kiliIsEnabled : KiliStrings.kiliIsDisabled;
+    let ariaLabel = Kili.isActivated ? KiliStrings.disableKili : KiliStrings.enableKili;
+    wp.a11y.speak(message, 'polite');
+    document.querySelector('.js-toggle-kili').setAttribute('aria-label', ariaLabel);
     if (Kili.isActivated) {
       document.querySelector('.js-kili-switch').classList.add('-on');
       return;

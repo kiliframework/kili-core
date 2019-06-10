@@ -8,7 +8,7 @@
   flex-wrap: wrap;
 }
 
-.misc-pub-section.enable-kili-toggle {
+.inside .enable-kili-toggle {
   display: flex;
   justify-content: space-between;
 }
@@ -16,4 +16,8 @@
 .enable-kili-toggle__title {
   font-weight: 700;
   margin-right: 5px;
+}
+
+.inside .enable-kili-toggle__title {
+  font-weight: normal;
 }
