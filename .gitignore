@@ -6,3 +6,6 @@ blocks
 data
 dist
 views
+
+*.pot~
+*.po~
