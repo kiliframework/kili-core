@@ -102,6 +102,7 @@
 		}
 		$this->do_render = false;
 		if ( class_exists( 'Timber' ) && false === stripos( $template, '.php' ) ) {
+			$this->context['post'] = new TimberPost();
 			echo Timber::compile( $template, $this->context );
 			return ;
 		}

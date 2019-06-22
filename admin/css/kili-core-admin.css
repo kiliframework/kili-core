@@ -21,3 +21,8 @@
 .inside .enable-kili-toggle__title {
   font-weight: normal;
 }
+
+.kili-hidden {
+  height: 0;
+  opacity: 0;
+}
