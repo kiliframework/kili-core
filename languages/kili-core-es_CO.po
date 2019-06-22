@@ -1,18 +1,18 @@
 msgid ""
 msgstr ""
 "Language: es_CO\n"
-"POT-Creation-Date: 2019-05-27 20:39+0000\n"
+"POT-Creation-Date: 2019-06-10 15:27+0000\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"PO-Revision-Date: 2019-05-27 20:45+0000\n"
+"PO-Revision-Date: 2019-06-10 15:30+0000\n"
 "X-Generator: Loco https://localise.biz/\n"
 "Project-Id-Version: Kili Core\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: rhonalf <tester@tests.co>\n"
-"Language-Team: Spanish (Colombia)\n"
+"Language-Team: Español de Colombia\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Loco-Version: 2.2.2; wp-5.2.1"
+"X-Loco-Version: 2.3.0; wp-5.2.1"
 
 #: includes/rest-api.php:28 includes/rest-api.php:41
 msgid "Please provide a valid post id"
@@ -23,25 +23,50 @@ msgid "Please provide a valid value for the field"
 msgstr "Por favor proporcione un valor válido para el campo"
 
 #: admin/class-kili-core-admin.php:75
+msgid "Disable Kili"
+msgstr "Desactivar Kili"
+
+#: admin/class-kili-core-admin.php:76 admin/class-kili-core-admin.php:79
+#: admin/class-kili-core-admin.php:109 admin/class-kili-core-admin.php:111
 msgid "Enable Kili"
 msgstr "Activar Kili"
 
-#: admin/class-kili-core-admin.php:76
+#: admin/class-kili-core-admin.php:77
+msgid "Kili is now enabled"
+msgstr "Kili está ahora activado"
+
+#: admin/class-kili-core-admin.php:78
+msgid "Kili is now disabled"
+msgstr "Kili está ahora desactivado"
+
+#: admin/class-kili-core-admin.php:80 admin/class-kili-core-admin.php:114
 msgid "No"
 msgstr "No"
 
-#: admin/class-kili-core-admin.php:77
+#: admin/class-kili-core-admin.php:81
+msgid "There was an error while toggling Kili"
+msgstr "Ocurrió un error al cambiar el estado de Kili"
+
+#: admin/class-kili-core-admin.php:82
+msgid "Successful Kili toggling"
+msgstr "El cambio de estado de Kili fué exitoso"
+
+#: admin/class-kili-core-admin.php:83 admin/class-kili-core-admin.php:113
 msgid "Yes"
 msgstr "Sí"
 
-#: admin/class-kili-core-admin.php:138
+#: admin/class-kili-core-admin.php:97
+msgid "Kili actions"
+msgstr "Acciones de Kili"
+
+#: admin/class-kili-core-admin.php:174
 #, php-format
 msgid "This plugin requires the following plugin: %1$s."
 msgid_plural "This plugin requires the following plugins: %1$s."
 msgstr[0] "Este plugin requiere: %1$s."
 msgstr[1] "Este plugin requiere: %1$s."
 
-#: admin/class-kili-core-admin.php:144
+#: admin/class-kili-core-admin.php:180
 #, php-format
 msgid "This plugin recommends the following plugin: %1$s."
 msgid_plural "This plugin recommends the following plugins: %1$s."

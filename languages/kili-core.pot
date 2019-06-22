@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Language: \n"
-"POT-Creation-Date: 2019-05-27 20:39+0000\n"
+"POT-Creation-Date: 2019-06-10 15:27+0000\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: Loco https://localise.biz/"
@@ -16,25 +16,50 @@ msgid "Please provide a valid value for the field"
 msgstr ""
 
 #: admin/class-kili-core-admin.php:75
+msgid "Disable Kili"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:76 admin/class-kili-core-admin.php:79
+#: admin/class-kili-core-admin.php:109 admin/class-kili-core-admin.php:111
 msgid "Enable Kili"
 msgstr ""
 
-#: admin/class-kili-core-admin.php:76
+#: admin/class-kili-core-admin.php:77
+msgid "Kili is now enabled"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:78
+msgid "Kili is now disabled"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:80 admin/class-kili-core-admin.php:114
 msgid "No"
 msgstr ""
 
-#: admin/class-kili-core-admin.php:77
+#: admin/class-kili-core-admin.php:81
+msgid "There was an error while toggling Kili"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:82
+msgid "Successful Kili toggling"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:83 admin/class-kili-core-admin.php:113
 msgid "Yes"
 msgstr ""
 
-#: admin/class-kili-core-admin.php:138
+#: admin/class-kili-core-admin.php:97
+msgid "Kili actions"
+msgstr ""
+
+#: admin/class-kili-core-admin.php:174
 #, php-format
 msgid "This plugin requires the following plugin: %1$s."
 msgid_plural "This plugin requires the following plugins: %1$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-kili-core-admin.php:144
+#: admin/class-kili-core-admin.php:180
 #, php-format
 msgid "This plugin recommends the following plugin: %1$s."
 msgid_plural "This plugin recommends the following plugins: %1$s."
