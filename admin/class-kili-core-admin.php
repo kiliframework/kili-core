@@ -62,7 +62,7 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/kili-core-admin.css', array(), $this->version, 'all' );
+		// wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/kili-core-admin.css', array(), $this->version, 'all' );
 	}
 
 	/**
@@ -71,19 +71,19 @@ class Kili_Core_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
-		$strings = array(
-			'disableKili' => __('Disable Kili', 'kili-core'),
-			'enableKili' => __('Enable Kili', 'kili-core'),
-			'kiliIsEnabled' => __('Kili is now enabled', 'kili-core'),
-			'kiliIsDisabled' => __('Kili is now disabled', 'kili-core'),
-			'enableKili' => __('Enable Kili', 'kili-core'),
-			'no' => __('No', 'kili-core'),
-			'toggleKiliError' => __('There was an error while toggling Kili', 'kili-core'),
-			'toggleKiliSuccess' => __('Successful Kili toggling', 'kili-core'),
-			'yes' => __('Yes', 'kili-core'),
-		);
-		wp_localize_script( $this->plugin_name, 'KiliStrings', $strings );
+		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/kili-core-admin.min.js', array( 'jquery' ), $this->version, false );
+		// $strings = array(
+		// 	'disableKili' => __('Disable Kili', 'kili-core'),
+		// 	'enableKili' => __('Enable Kili', 'kili-core'),
+		// 	'kiliIsEnabled' => __('Kili is now enabled', 'kili-core'),
+		// 	'kiliIsDisabled' => __('Kili is now disabled', 'kili-core'),
+		// 	'enableKili' => __('Enable Kili', 'kili-core'),
+		// 	'no' => __('No', 'kili-core'),
+		// 	'toggleKiliError' => __('There was an error while toggling Kili', 'kili-core'),
+		// 	'toggleKiliSuccess' => __('Successful Kili toggling', 'kili-core'),
+		// 	'yes' => __('Yes', 'kili-core'),
+		// );
+		// wp_localize_script( $this->plugin_name, 'KiliStrings', $strings );
 	}
 
 	/**
@@ -92,8 +92,8 @@ class Kili_Core_Admin {
 	 * @return void
 	 */
 	public function add_actions() {
-		add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
-		add_action( 'add_meta_boxes', array($this, 'kili_insert_actions_box') );
+		// add_action( 'tgmpa_register', array($this, 'kili_register_required_plugins') );
+		// add_action( 'add_meta_boxes', array($this, 'kili_insert_actions_box') );
 	}
 
 	/**
@@ -212,28 +212,28 @@ class Kili_Core_Admin {
 			),
 		);
 		include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		if ( ! is_plugin_active( 'advanced-custom-fields-pro/acf.php' ) ) {
-			array_push( $plugins, array(
-				'name'                  => 'Advanced Custom Fields',
-				'slug'                  => 'advanced-custom-fields',
-				'source'                => 'https://github.com/AdvancedCustomFields/acf/archive/master.zip',
-				'required'              => true,
-				'version'               => '5.7.12',
-				'force_activation'      => false,
-				'force_deactivation'    => false,
-				'external_url'          => 'https://github.com/AdvancedCustomFields/acf',
-			) );
-			array_push( $plugins, array(
-				'name'                  => 'Advanced Custom Fields: Options Page',
-				'slug'                  => 'acf-options-page',
-				'source'                => 'https://connect.advancedcustomfields.com/index.php?a=download&p=options-page&k=OPN8-FA4J-Y2LW-81LS',
-				'required'              => false,
-				'version'               => '2.0.1',
-				'force_activation'      => false,
-				'force_deactivation'    => false,
-				'external_url'          => 'https://www.advancedcustomfields.com/add-ons/options-page/',
-			) );
-		}
+		// if ( ! is_plugin_active( 'advanced-custom-fields-pro/acf.php' ) ) {
+		// 	array_push( $plugins, array(
+		// 		'name'                  => 'Advanced Custom Fields',
+		// 		'slug'                  => 'advanced-custom-fields',
+		// 		'source'                => 'https://github.com/AdvancedCustomFields/acf/archive/master.zip',
+		// 		'required'              => true,
+		// 		'version'               => '5.7.12',
+		// 		'force_activation'      => false,
+		// 		'force_deactivation'    => false,
+		// 		'external_url'          => 'https://github.com/AdvancedCustomFields/acf',
+		// 	) );
+		// 	array_push( $plugins, array(
+		// 		'name'                  => 'Advanced Custom Fields: Options Page',
+		// 		'slug'                  => 'acf-options-page',
+		// 		'source'                => 'https://connect.advancedcustomfields.com/index.php?a=download&p=options-page&k=OPN8-FA4J-Y2LW-81LS',
+		// 		'required'              => false,
+		// 		'version'               => '2.0.1',
+		// 		'force_activation'      => false,
+		// 		'force_deactivation'    => false,
+		// 		'external_url'          => 'https://www.advancedcustomfields.com/add-ons/options-page/',
+		// 	) );
+		// }
 		$config = array(
 			'id'                             => 'kili_tgmpa',
 			'default_path'                   => '',

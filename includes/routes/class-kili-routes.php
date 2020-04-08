@@ -96,7 +96,7 @@
 		}
 		// trim '_template' from end.
 		$type      = substr( current_filter(), 0, - 9 );
-		$template = $this->get_template( $type );
+		$template = $this->get_template( $type, $fallback );
 		if ( strcasecmp( $template, '' ) === 0 ) {
 			return;
 		}
