@@ -7,17 +7,20 @@
 
 $term = get_queried_object();
 $args = array(
-	'post_type' => get_post_type(),
-	'post_status' => 'publish',
+	'post_type'      => get_post_type(),
+	'post_status'    => 'publish',
+	'orderby'        => 'date',
+	'order'          => 'DESC',
 	'posts_per_page' => get_option( 'posts_per_page' ),
 );
 if ( isset( $term->taxonomy ) ) {
 	$args['tax_query'] = array(
 		array(
 			'taxonomy' => $term->taxonomy,
-			'field' => 'term_id',
-			'terms' => $term->term_id,
+			'field' => 'slug',
+			'terms'    => $term->slug,
+			'include_children' => false,
 		),
 	);
 }
-$this->context['posts'] = Timber::get_posts( $args );
+$this->context['posts'] = class_exists('Timber') ? Timber::get_posts( $args ) : get_posts( $args );
